@@ -1,0 +1,42 @@
+---
+- set_fact:
+    java_tarball_file: "jdk-{{ java_version.split('-')[0] }}-linux-x64"
+  when: java_tarball_file is not defined
+
+- set_fact:
+    java_url:  "http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}/{{ java_tarball_file }}.tar.gz"
+  when: java_url is not defined
+
+- name: Download JDK locally
+  get_url:
+    url: "{{ java_url }}"
+    headers: 'Cookie:oraclelicense=accept-securebackup-cookie'
+    dest: "/tmp/{{ java_tarball_file }}.tar.gz"
+  delegate_to: 127.0.0.1
+
+- name: Create installation dir
+  file:
+    path: "{{ java_install_dir }}"
+    state: directory
+
+- name: Extract JDK archive into installation directory
+  unarchive:
+    src: "/tmp/{{ java_tarball_file }}.tar.gz"
+    dest: "{{ java_install_dir }}"
+    mode: "u=rwx,go=rx"
+
+# list is sorted by path
+- name: Get content of "{{ java_install_dir }}"
+  find:
+    paths: "{{ java_install_dir }}"
+    file_type: directory
+  register: install_dir_content
+
+- name: Set environment JAVA_HOME
+  lineinfile:
+    dest: "{{ ansible_env['HOME'] }}/.profile"
+    line: "export JAVA_HOME={{ install_dir_content.files[-1].path }}/"
+    regexp: "export JAVA_HOME=*"
+
+- set_fact:
+    java_bin: "{ install_dir_content.files[-1].path }}/bin"

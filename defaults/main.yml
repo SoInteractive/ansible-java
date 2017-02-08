@@ -1,0 +1,6 @@
+---
+java_user_install: False
+java_version: 8u112-b15
+java_download_path: /tmp
+#java_url: http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-x64.tar.gz
+java_install_dir: "{{ ansible_user_dir }}/java"
