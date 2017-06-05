@@ -1,9 +1,11 @@
 ---
-- set_fact:
+- name: Set java package name
+  set_fact:
     java_tarball_file: "jdk-{{ java_version.split('-')[0] }}-linux-x64"
   when: java_tarball_file is not defined
 
-- set_fact:
+- name: Set java download url
+  set_fact:
     java_url:  "http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}/{{ java_tarball_file }}.tar.gz"
   when: java_url is not defined
 
@@ -38,5 +40,6 @@
     line: "export JAVA_HOME={{ install_dir_content.files[-1].path }}/"
     regexp: "export JAVA_HOME=*"
 
-- set_fact:
-    java_bin: "{ install_dir_content.files[-1].path }}/bin"
+#- name:
+#  set_fact:
+#    java_bin: "{ install_dir_content.files[-1].path }}/bin"
